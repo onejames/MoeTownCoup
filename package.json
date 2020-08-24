@@ -1,0 +1,22 @@
+{
+  "name": "moetowncoup",
+  "version": "1.0.0",
+  "description": "For the Ladies!",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onejames/MoeTownCoup.git"
+  },
+  "author": "James Laster",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/onejames/MoeTownCoup/issues"
+  },
+  "homepage": "https://github.com/onejames/MoeTownCoup#readme",
+  "dependencies": {
+    "onoff": "^6.0.0"
+  }
+}
