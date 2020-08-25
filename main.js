@@ -3,6 +3,8 @@ var Led = require('./lib/Led')
 var Switch = require('./lib/Switch')
 var Door = require('./lib/Door')
 
+console.log('Booting Moe Town Coup')
+
 const motor = new Stepper(21, 22, 19) // (stepPin, directionPin, enablePin, sleep=0, reset=0, ms1=0, ms2=0, ms3=0, stepsPerRev=200)
 motor.disable()
 
@@ -16,13 +18,27 @@ var openSw = new Switch(5)
 
 var door = new Door(motor, openSw, closeSw)
 
-door.on('open' _=> {
-  redLed.on()
-  greenLed.off()
-})
-door.on('closed' _=> {
+var statusOpen = () => {
   redLed.off()
   greenLed.on()
+}
+var statusClosed = () => {
+  redLed.on()
+  greenLed.off()
+}
+
+if(door.status() == 'OPEN') {
+  statusOpen()
+}
+if(door.status() == 'CLOSED') {
+  statusClosed()
+}
+
+door.on('open', () => {
+  statusOpen()
+})
+door.on('closed', () => {
+  statusClosed()
 })
 
 greenSw.SWITCH.watch((err, value) => {
@@ -33,7 +49,6 @@ greenSw.SWITCH.watch((err, value) => {
     door.open()
   }
 });
-
 redSw.SWITCH.watch((err, value) => {
   if (err) {
     throw err;
