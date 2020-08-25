@@ -24,3 +24,7 @@ var stepInterval = setInterval(function(){motor.step()}, 50)
 setTimeout(motor.destroy, 5000);
 
 clearInterval(stepInterval);
+
+process.on('SIGINT', _ => {
+
+});
