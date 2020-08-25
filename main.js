@@ -3,7 +3,7 @@ var Led = require('./lib/Led')
 var Switch = require('./lib/Switch')
 var Door = require('./lib/Door')
 
-const motor = new Stepper(21, 22, 19)
+const motor = new Stepper(21, 22, 19) // (stepPin, directionPin, enablePin, sleep=0, reset=0, ms1=0, ms2=0, ms3=0, stepsPerRev=200)
 motor.disable()
 
 var redLed = new Led(25)
@@ -16,8 +16,14 @@ var openSw = new Switch(5)
 
 var door = new Door(motor, openSw, closeSw)
 
-// door.watch(err, value) => { value == 'closed' ?? redLed.on() greenLed.off() })
-// door.watch(err, value) => { value == 'open' ?? redLed.off() greenLed.on() })
+door.on('open' _=> {
+  redLed.on()
+  greenLed.off()
+})
+door.on('closed' _=> {
+  redLed.off()
+  greenLed.on()
+})
 
 greenSw.SWITCH.watch((err, value) => {
   if (err) {
