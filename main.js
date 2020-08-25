@@ -1,30 +1,47 @@
-var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
 var Stepper = require('./lib/Stepper')
+var Led = require('./lib/Led')
+var Switch = require('./lib/Switch')
+var Door = require('./lib/Door')
 
 const motor = new Stepper(21, 22, 19)
+motor.disable()
 
-// var RedLed = new Gpio(25, 'out');
-//
-// GreenLed = 26
-// GreenOpenBtn = 24
-// CloseSw = 4
-//
-// RedLed = 25
-// RedCloseBtn = 23
-// OpenSw = 5
-//
-// status = 'open' # open / opening / closed / closing
+var redLed = new Led(25)
+var redSw = new Switch(23)
+var closeSw = new Switch(4)
 
+var greenLed = new Led(26)
+var greenSw = new Switch(24)
+var openSw = new Switch(5)
 
-motor.direction('cw')
-motor.enable()
+var door = new Door(motor, openSw, closeSw)
 
-var stepInterval = setInterval(function(){motor.step()}, 50)
+// door.watch(err, value) => { value == 'closed' ?? redLed.on() greenLed.off() })
+// door.watch(err, value) => { value == 'open' ?? redLed.off() greenLed.on() })
 
-setTimeout(motor.destroy, 5000);
+greenSw.SWITCH.watch((err, value) => {
+  if (err) {
+    throw err;
+  }
+  if(value === 1) {
+    door.open()
+  }
+});
 
-clearInterval(stepInterval);
+redSw.SWITCH.watch((err, value) => {
+  if (err) {
+    throw err;
+  }
+  if(value === 1) {
+    door.close()
+  }
+});
+
 
 process.on('SIGINT', _ => {
-
+  door.destroy()
+  greenSw.destroy()
+  redSw.destroy()
+  greenLed.destroy()
+  redLed.destroy()
 });

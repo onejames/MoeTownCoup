@@ -1,13 +1,24 @@
 var Led = require('./lib/Led')
 var Switch = require('./lib/Switch')
 
-var SWITCH = new Switch(24);
-var LED = new Led(25);
+var redLed = new Led(25);
+var redSw = new Switch(23);
 
-SWITCH.watch((err, value) => {
+var greenSw = new Switch(24);
+var greenLed = new Led(26);
+
+greenSw.SWITCH.watch((err, value) => {
   if (err) {
     throw err;
   }
   console.log(value)
-  led.set(!led.status());
+  greenLed.set(!greenLed.status());
+});
+
+redSw.SWITCH.watch((err, value) => {
+  if (err) {
+    throw err;
+  }
+  console.log(value)
+  redLed.set(!redLed.status());
 });
