@@ -70,7 +70,6 @@ greenSw.SWITCH.watch((err, value) => {
   }
   if(value === 1) {
     spinner.stop(true)
-    console.log('Opening')
     door.open()
     resumeSpinner()
   }
@@ -81,7 +80,6 @@ redSw.SWITCH.watch((err, value) => {
   }
   if(value === 1) {
     spinner.stop(true)
-    console.log('Closing')
     door.close()
     resumeSpinner()
   }
@@ -101,7 +99,7 @@ if(door.status() == 'CLOSED') {
 console.log('Status set')
 
 process.on('SIGINT', _ => {
-  console.log('Bye!')
+  console.log('\r\n Bye!')
   door.destroy()
   greenSw.destroy()
   redSw.destroy()
