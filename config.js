@@ -6,8 +6,8 @@ module.exports = {
     },
     redLed: 25,
     redSw: 23,
-    closeSw: 4,
+    closeSw: 5,
     greenLed: 26,
     greenSw: 24,
-    openSw: 5
+    openSw: 4
 }
