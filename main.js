@@ -1,22 +1,40 @@
+var config = require('./config')
+
+var outputs = require('./lib/outputs')
+out = new outputs()
+
+console.log('Booting Moe Town Coup...')
+
 var Stepper = require('./lib/Stepper')
 var Led = require('./lib/Led')
 var Switch = require('./lib/Switch')
 var Door = require('./lib/Door')
 
-console.log('Booting Moe Town Coup')
+out.logo()
+out.configTable(config)
 
-const motor = new Stepper(21, 22, 19) // (stepPin, directionPin, enablePin, sleep=0, reset=0, ms1=0, ms2=0, ms3=0, stepsPerRev=200)
+const motor = new Stepper(c
+    onfig.motor.stepPin,
+    config.motor.directionPin,
+    config.motor.enablePin
+) // sleep=0, reset=0, ms1=0, ms2=0, ms3=0, stepsPerRev=200)
 motor.disable()
 
-var redLed = new Led(25)
-var redSw = new Switch(23)
-var closeSw = new Switch(4)
+console.log('Motor loaded...')
 
-var greenLed = new Led(26)
-var greenSw = new Switch(24)
-var openSw = new Switch(5)
+var redLed = new Led(config.redLed)
+var redSw = new Switch(config.redSw)
+var closeSw = new Switch(config.closeSw)
+
+var greenLed = new Led(config.greenLed)
+var greenSw = new Switch(config.greenSw)
+var openSw = new Switch(config.openSw)
+
+console.log('In\'s and outs loaded...')
 
 var door = new Door(motor, openSw, closeSw)
+
+console.log('Door initiated...')
 
 var statusOpen = () => {
   redLed.off()
@@ -25,13 +43,6 @@ var statusOpen = () => {
 var statusClosed = () => {
   redLed.on()
   greenLed.off()
-}
-
-if(door.status() == 'OPEN') {
-  statusOpen()
-}
-if(door.status() == 'CLOSED') {
-  statusClosed()
 }
 
 door.on('open', () => {
@@ -46,6 +57,7 @@ greenSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    console.log('Opening')
     door.open()
   }
 });
@@ -54,10 +66,23 @@ redSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    console.log('Closing')
     door.close()
   }
 });
 
+console.log('Events registered...')
+
+if(door.status() == 'OPEN') {
+  console.log('Coup is open')
+  statusOpen()
+}
+if(door.status() == 'CLOSED') {
+  console.log('Coup is closed')
+  statusClosed()
+}
+
+console.log('Status set')
 
 process.on('SIGINT', _ => {
   door.destroy()
@@ -66,3 +91,5 @@ process.on('SIGINT', _ => {
   greenLed.destroy()
   redLed.destroy()
 });
+
+console.log('spinner')
