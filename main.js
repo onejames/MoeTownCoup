@@ -13,8 +13,10 @@ var Door = require('./lib/Door')
 out.logo()
 out.configTable(config)
 
-const motor = new Stepper(c
-    onfig.motor.stepPin,
+spinner = out.spinner()
+
+const motor = new Stepper(
+    config.motor.stepPin,
     config.motor.directionPin,
     config.motor.enablePin
 ) // sleep=0, reset=0, ms1=0, ms2=0, ms3=0, stepsPerRev=200)
@@ -46,10 +48,14 @@ var statusClosed = () => {
 }
 
 door.on('open', () => {
+  spinner.stop(true)
   statusOpen()
+  spinner.start()
 })
 door.on('closed', () => {
+  spinner.stop(true)
   statusClosed()
+  spinner.start()
 })
 
 greenSw.SWITCH.watch((err, value) => {
@@ -57,8 +63,10 @@ greenSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    spinner.stop(true)
     console.log('Opening')
     door.open()
+    spinner.start()
   }
 });
 redSw.SWITCH.watch((err, value) => {
@@ -66,8 +74,10 @@ redSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    spinner.stop(true)
     console.log('Closing')
     door.close()
+    spinner.start()
   }
 });
 
@@ -92,4 +102,6 @@ process.on('SIGINT', _ => {
   redLed.destroy()
 });
 
-console.log('spinner')
+console.log('ctrl+c to exit')
+
+spinner.start()
