@@ -52,11 +52,13 @@ var resumeSpinner = () => {
 }
 
 door.on('open', () => {
+  console.log('Door is open')
   spinner.stop(true)
   statusOpen()
   resumeSpinner()
 })
 door.on('closed', () => {
+  console.log('Door is closed')
   spinner.stop(true)
   statusClosed()
   resumeSpinner()
