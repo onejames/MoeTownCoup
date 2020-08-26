@@ -10,7 +10,7 @@ var Led = require('./lib/Led')
 var Switch = require('./lib/Switch')
 var Door = require('./lib/Door')
 
-out.logo()
+out.logo('0.0.3')
 out.configTable(config)
 
 spinner = out.spinner()
