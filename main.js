@@ -38,17 +38,34 @@ var door = new Door(motor, openSw, closeSw)
 
 console.log('Door initiated...')
 
+var processing = false
 var statusOpen = () => {
+  processing = false
   redLed.off()
   greenLed.on()
 }
 var statusClosed = () => {
+  processing = false
   redLed.on()
   greenLed.off()
 }
 var runSpinner = () => {
   console.log('ctrl+c to exit')
   spinner.start()
+}
+var blink = () => {
+  if(!processing) {
+    return
+  }
+  redLed.set(!redLed.status())
+  greenLed.set(!greenLed.status())
+  setTimeout(() => { blink() }, 500)
+}
+var inProcess = () => {
+  processing = true
+  redLed.on()
+  greenLed.off()
+  blink()
 }
 
 door.on('open', () => {
@@ -69,6 +86,7 @@ greenSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    inProcess()
     spinner.stop(true)
     console.log('green button press')
     door.open()
@@ -80,6 +98,7 @@ redSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    inProcess()
     spinner.stop(true)
     door.close()
     runSpinner()
@@ -100,6 +119,7 @@ if(door.status() == 'CLOSED') {
 console.log('Status set')
 
 process.on('SIGINT', _ => {
+  spinner.stop(true)
   console.log('\r\n Bye!')
   door.destroy()
   greenSw.destroy()
