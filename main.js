@@ -46,7 +46,7 @@ var statusClosed = () => {
   redLed.on()
   greenLed.off()
 }
-var resumeSpinner = () => {
+var runSpinner = () => {
   console.log('ctrl+c to exit')
   spinner.start()
 }
@@ -55,13 +55,13 @@ door.on('open', () => {
   console.log('Door is open')
   spinner.stop(true)
   statusOpen()
-  resumeSpinner()
+  runSpinner()
 })
 door.on('closed', () => {
   console.log('Door is closed')
   spinner.stop(true)
   statusClosed()
-  resumeSpinner()
+  runSpinner()
 })
 
 greenSw.SWITCH.watch((err, value) => {
@@ -70,8 +70,9 @@ greenSw.SWITCH.watch((err, value) => {
   }
   if(value === 1) {
     spinner.stop(true)
+    console.log('green button press')
     door.open()
-    resumeSpinner()
+    runSpinner()
   }
 });
 redSw.SWITCH.watch((err, value) => {
@@ -81,7 +82,7 @@ redSw.SWITCH.watch((err, value) => {
   if(value === 1) {
     spinner.stop(true)
     door.close()
-    resumeSpinner()
+    runSpinner()
   }
 });
 
@@ -106,3 +107,5 @@ process.on('SIGINT', _ => {
   greenLed.destroy()
   redLed.destroy()
 });
+
+runSpinner()

@@ -1,6 +1,10 @@
 # MoeTownCoup
 Its a coup
 
-pip install --user pipenv
+npm install
 
-pipenv install requests
+# Primary loop
+npm main.js
+
+Simple test files in:
+tests/
