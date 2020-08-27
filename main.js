@@ -59,7 +59,7 @@ var blink = () => {
   }
   redLed.set(!redLed.status())
   greenLed.set(!greenLed.status())
-  setTimeout(() => { blink() }, 500)
+  setTimeout(() => { blink() }, 250)
 }
 var inProcess = () => {
   processing = true
@@ -67,16 +67,32 @@ var inProcess = () => {
   greenLed.off()
   blink()
 }
+var openError = () => {
+  setTimeout(() => { greenLed.off() }, 250)
+  setTimeout(() => { greenLed.on() }, 500)
+  setTimeout(() => { greenLed.off() }, 750)
+  setTimeout(() => { greenLed.on() }, 1000)
+  setTimeout(() => { greenLed.off() }, 1250)
+  setTimeout(() => { greenLed.on() }, 1500)
+}
+var closeError = () => {
+  setTimeout(() => { redLed.off() }, 250)
+  setTimeout(() => { redLed.on() }, 500)
+  setTimeout(() => { redLed.off() }, 750)
+  setTimeout(() => { redLed.on() }, 1000)
+  setTimeout(() => { redLed.off() }, 1250)
+  setTimeout(() => { redLed.on() }, 1500)
+}
 
 door.on('open', () => {
-  console.log('Door is open')
   spinner.stop(true)
+  console.log('Door is open')
   statusOpen()
   runSpinner()
 })
 door.on('closed', () => {
-  console.log('Door is closed')
   spinner.stop(true)
+  console.log('Door is closed')
   statusClosed()
   runSpinner()
 })
@@ -86,6 +102,10 @@ greenSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    if(door.status() == 'OPEN') {
+      openError()
+      return;
+    }
     inProcess()
     spinner.stop(true)
     console.log('green button press')
@@ -98,6 +118,10 @@ redSw.SWITCH.watch((err, value) => {
     throw err;
   }
   if(value === 1) {
+    if(door.status() == 'CLOSED') {
+      closeError()
+      return;
+    }
     inProcess()
     spinner.stop(true)
     door.close()
