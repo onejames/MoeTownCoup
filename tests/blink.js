@@ -1,4 +1,4 @@
-var Led = require('./lib/Led')
+var Led = require('../lib/Led')
 
 var LED = new Led(25);
 

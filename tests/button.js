@@ -1,5 +1,5 @@
-var Led = require('./lib/Led')
-var Switch = require('./lib/Switch')
+var Led = require('../lib/Led')
+var Switch = require('../lib/Switch')
 
 var redLed = new Led(25)
 var redSw = new Switch(23)

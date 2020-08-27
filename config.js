@@ -2,7 +2,7 @@ module.exports = {
     motor: {
         stepPin: 21,
         directionPin: 22,
-        enablePin: 19
+        enablePin: 20
     },
 
     redLed: 25,
@@ -19,5 +19,6 @@ module.exports = {
     // : 13,
     // : 16,
     // : 17,
+    // : 18,
     // : 27
 }
