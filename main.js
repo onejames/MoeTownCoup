@@ -103,6 +103,10 @@ greenSw.SWITCH.watch((err, value) => {
       openError()
       return;
     }
+    if(door.status() == 'MOVING') {
+      console.log('Requested to open while moving')
+      return;
+    }
     inProcess()
     spinner.stop(true)
     console.log('green button press')
@@ -117,6 +121,10 @@ redSw.SWITCH.watch((err, value) => {
   if(value === 1) {
     if(door.status() == 'CLOSED') {
       closeError()
+      return;
+    }
+    if(door.status() == 'MOVING') {
+      console.log('Requested to close while moving')
       return;
     }
     inProcess()
@@ -138,6 +146,26 @@ if(door.status() == 'CLOSED') {
 }
 
 console.log('Status set')
+
+const Si7021 = require('./lib/si7021-sensor');
+
+const readSensorData = () => {
+  si7021.readSensorData()
+    .then((data) => {
+      spinner.stop(true)
+      console.log(`data = ${JSON.stringify(data, null, 2)}`);
+      spinner.start()
+      setTimeout(readSensorData, 2000);
+    })
+    .catch((err) => {
+      console.log(`Si7021 read error: ${err}`);
+      setTimeout(readSensorData, 2000);
+    });
+};
+
+si7021.reset()
+  .then((result) => readSensorData())
+  .catch((err) => console.error(`Si7021 reset failed: ${err} `));
 
 process.on('SIGINT', _ => {
   spinner.stop(true)
