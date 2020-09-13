@@ -8,6 +8,7 @@ console.log('Booting Moe Town Coup...')
 var Stepper = require('./lib/Stepper')
 var Led = require('./lib/Led')
 var Switch = require('./lib/Switch')
+var Relay = require('./lib/Relay')
 var Door = require('./lib/Door')
 
 out.logo('0.0.3')
@@ -37,6 +38,8 @@ console.log('In\'s and outs loaded...')
 var door = new Door(motor, openSw, closeSw)
 
 console.log('Door initiated...')
+
+// - - - - - - - - - - - - - COOP FUNCTIONALITY - - - - - - - - - - - - - - -
 
 var processing = false
 var statusOpen = () => {
@@ -96,16 +99,16 @@ door.on('closed', () => {
 
 greenSw.SWITCH.watch((err, value) => {
   if (err) {
-    throw err;
+    throw err
   }
   if(value === 1) {
     if(door.status() == 'OPEN') {
       openError()
-      return;
+      return
     }
     if(door.status() == 'MOVING') {
       console.log('Requested to open while moving')
-      return;
+      return
     }
     inProcess()
     spinner.stop(true)
@@ -113,26 +116,28 @@ greenSw.SWITCH.watch((err, value) => {
     door.open()
     spinner.start()
   }
-});
+})
 redSw.SWITCH.watch((err, value) => {
   if (err) {
-    throw err;
+    throw err
   }
   if(value === 1) {
     if(door.status() == 'CLOSED') {
       closeError()
-      return;
+      return
     }
     if(door.status() == 'MOVING') {
       console.log('Requested to close while moving')
-      return;
+      return
     }
     inProcess()
     spinner.stop(true)
     door.close()
     spinner.start()
   }
-});
+})
+
+// - - - -
 
 console.log('Events registered...')
 
@@ -147,25 +152,74 @@ if(door.status() == 'CLOSED') {
 
 console.log('Status set')
 
-const Si7021 = require('./lib/si7021-sensor');
+// - - - - - - - - - - - - - - - ENVIROMENTAL - - - - - - - - - - - - - - - - -
+
+console.log('Initalising Ic2 bus and weather shield...')
+
+var bigRelay = new Relay(config.bigRelay)
+var envData = {humidity: null, temperature: null, pressure: null, luminosity: null}
+
+const Si7021 = require('./lib/si7021-sensor')
+const si7021 = new Si7021({ i2cBusNo : 1 })
 
 const readSensorData = () => {
   si7021.readSensorData()
     .then((data) => {
       spinner.stop(true)
-      console.log(`data = ${JSON.stringify(data, null, 2)}`);
+
+      let oldTemp = envData.temperature
+      envData.humidity = data.humidity
+      envData.temperature = data.temperature_C
+
+      if(Math.abs(oldTemp - data.temperature_C) > 1) {
+        console.log(`${JSON.stringify(data, null, 2)}`)
+        processNewEnvData()
+      }
+
       spinner.start()
-      setTimeout(readSensorData, 2000);
+      setTimeout(readSensorData, 10000)
     })
     .catch((err) => {
-      console.log(`Si7021 read error: ${err}`);
-      setTimeout(readSensorData, 2000);
-    });
-};
+      console.log(`Si7021 read error: ${err}`)
+      setTimeout(readSensorData, 10000)
+    })
+}
 
 si7021.reset()
   .then((result) => readSensorData())
-  .catch((err) => console.error(`Si7021 reset failed: ${err} `));
+  .catch((err) => console.error(`Si7021 reset failed: ${err} `))
+
+// send new env data to aws every X min
+
+if(envData.temperature > 20) {
+  console.log("We are in cooling mode")
+} else {
+  console.log("We are in heating mode")
+}
+
+var processNewEnvData = () => {
+  if(envData.temperature == null){
+    return
+  }
+
+  if(envData.temperature > 25) {
+    bigRelay.writeSync(1)
+    console.log('enabling fan')
+  }
+  if(envData.temperature < 5) {
+    bigRelay.writeSync(1)
+    console.log('enabling heater')
+  }
+  if( envData.temperature < 24 &&  envData.temperature > 5 ) {
+    bigRelay.writeSync(0)
+  }
+
+  // Check luminosity and close door if dark?
+}
+
+console.log('Enviromental online')
+
+// - - -
 
 process.on('SIGINT', _ => {
   spinner.stop(true)
@@ -175,6 +229,8 @@ process.on('SIGINT', _ => {
   redSw.destroy()
   greenLed.destroy()
   redLed.destroy()
-});
+  si7021.reset()
+  process.exit(0)
+})
 
 spinner.start()
