@@ -4,8 +4,8 @@ var Stepper = require('../lib/Stepper')
 
 const motor = new Stepper(21, 22, 20)
 
-motor.direction('cw')
 motor.enable()
+motor.direction('cw')
 var count = 0;
 
 var stepInterval = setInterval(function(){

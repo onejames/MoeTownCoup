@@ -165,18 +165,18 @@ const si7021 = new Si7021({ i2cBusNo : 1 })
 const readSensorData = () => {
   si7021.readSensorData()
     .then((data) => {
-      spinner.stop(true)
-
       let oldTemp = envData.temperature
       envData.humidity = data.humidity
       envData.temperature = data.temperature_C
 
+      // Move this back in that if there...
+      spinner.stop(true)
+      console.log(`${JSON.stringify(data, null, 2)}`)
+      spinner.start()
       if(Math.abs(oldTemp - data.temperature_C) > 1) {
-        console.log(`${JSON.stringify(data, null, 2)}`)
         processNewEnvData()
       }
 
-      spinner.start()
       setTimeout(readSensorData, 10000)
     })
     .catch((err) => {
@@ -203,15 +203,15 @@ var processNewEnvData = () => {
   }
 
   if(envData.temperature > 25) {
-    bigRelay.writeSync(1)
+    bigRelay.on()
     console.log('enabling fan')
   }
   if(envData.temperature < 5) {
-    bigRelay.writeSync(1)
+    bigRelay.on()
     console.log('enabling heater')
   }
   if( envData.temperature < 24 &&  envData.temperature > 5 ) {
-    bigRelay.writeSync(0)
+    bigRelay.off()
   }
 
   // Check luminosity and close door if dark?
