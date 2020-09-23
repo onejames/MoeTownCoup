@@ -2,11 +2,12 @@
 
 var Stepper = require('../lib/Stepper')
 
+// stepPin, directionPin, enablePin
 const motor = new Stepper(21, 22, 20)
+var count = 0;
 
 motor.enable()
 motor.direction('cw')
-var count = 0;
 
 var stepInterval = setInterval(function(){
     if(count > 50) {
