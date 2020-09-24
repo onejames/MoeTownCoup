@@ -9,7 +9,7 @@ var awsIot = require('aws-iot-device-sdk');
 //
 var thingShadows = awsIot.thingShadow({
    keyPath: 'iotKeys/MoeTownCoup.private.key',
-  certPath: 'iotKeys/MoeTownCoup.cert.key',
+  certPath: 'iotKeys/MoeTownCoup.cert.pem',
     caPath: 'iotKeys/root-CA.crt',
   clientId: 'arn:aws:iot:us-east-1:413036241627:thing/MoeTownCoup',
       host: 'a5ypcgm97wfum-ats.iot.us-east-1.amazonaws.com'
@@ -68,3 +68,5 @@ thingShadows.on('timeout',
     // call to get(), update(), or delete().
     }
 );
+
+console.log('running')
