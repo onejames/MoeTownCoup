@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/onejames/MoeTownCoup#readme",
   "dependencies": {
+    "aws-sdk": "^2.759.0",
     "cli-spinner": "^0.2.10",
     "cli-spinners": "^2.4.0",
     "cli-table": "^0.3.1",
