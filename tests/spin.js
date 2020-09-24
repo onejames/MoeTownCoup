@@ -8,17 +8,4 @@ var count = 0;
 
 motor.enable()
 motor.direction('cw')
-
-var stepInterval = setInterval(function(){
-    if(count > 50) {
-        motor.direction('ccw')
-    }
-    motor.step()
-    count++
-}, 50)
-
-setTimeout(function(){
-    motor.destroy()
-}, 5000);
-
-clearInterval(stepInterval);
+motor.run()
