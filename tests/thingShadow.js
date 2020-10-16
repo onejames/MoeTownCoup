@@ -20,9 +20,6 @@ var clientTokenUpdate;
 thingShadows.on('connect', function() {
     thingShadows.register( 'MoeTownCoup', {}, function() {
 
-        // Once registration is complete, update the Thing Shadow named
-        // 'RGBLedLamp' with the latest device state and save the clientToken
-        // so that we can correlate it with status or timeout events.
         var coupState = { "state" : {
             "door" : "open",
             "temperature" : 26,
@@ -31,41 +28,42 @@ thingShadows.on('connect', function() {
             "relay" : false
         }};
 
-        clientTokenUpdate = thingShadows.update('MoeTownCoup', coupState  );
-        // If the update method
-        // returns null, it's because another operation is currently in progress and
-        // you'll need to wait until it completes (or times out) before updating the
-        // shadow.
+        clientTokenUpdate = thingShadows.update('MoeTownCoup', coupState);
+        // If the update method returns null, it's because another operation is
+        // currently in progress and you'll need to wait until it completes
+        // (or times out) before updating the shadow.
         if (clientTokenUpdate === null) {
             console.log('update shadow failed, operation still in progress');
+        } else {
+            console.log('clientTokenUpdate is '+clientTokenUpdate+' and we are connected.')
         }
     });
 });
+
 thingShadows.on('status',
     function(thingName, stat, clientToken, stateObject) {
-        console.log('received '+stat+' on '+thingName+': '+JSON.stringify(stateObject));
         // These events report the status of update(), get(), and delete()
         // calls.  The clientToken value associated with the event will have
         // the same value which was returned in an earlier call to get(),
         // update(), or delete().  Use status events to keep track of the
         // status of shadow operations.
+        console.log('received '+stat+' on '+thingName+': '+JSON.stringify(stateObject));
     }
 );
 
 thingShadows.on('delta',
     function(thingName, stateObject) {
-       console.log('received delta on '+thingName+': '+
-                   JSON.stringify(stateObject));
+       console.log('received delta on '+thingName+': '+JSON.stringify(stateObject));
     }
 );
 
 thingShadows.on('timeout',
     function(thingName, clientToken) {
+        // In the event that a shadow operation times out, you'll receive
+        // one of these events.  The clientToken value associated with the
+        // event will have the same value which was returned in an earlier
+        // call to get(), update(), or delete().
        console.log('received timeout on '+thingName+' with token: '+ clientToken);
-    // In the event that a shadow operation times out, you'll receive
-    // one of these events.  The clientToken value associated with the
-    // event will have the same value which was returned in an earlier
-    // call to get(), update(), or delete().
     }
 );
 
