@@ -259,3 +259,4 @@ process.on('SIGINT', _ => {
 spinner.start()
 
 module.exports.Coup = Coup;
+module.exports.Spinner = spinner;

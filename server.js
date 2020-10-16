@@ -2,14 +2,10 @@ const path = require( 'path' );
 const express = require( 'express' );
 const socketIO = require( 'socket.io' );
 
-// import coup
-const { coup } = require( './coup' );
+const { Coup, Spinner } = require( './coup' );
 
-// create an express app
 const app = express();
 
-// send `index.html` from the current directory
-// when `http://<ip>:9000/` route is accessed using `GET` method
 app.get( '/', ( request, response ) => {
   response.sendFile( path.resolve( __dirname, 'web-app/index.html' ), {
     headers: {
@@ -23,19 +19,29 @@ app.use( '/assets/', express.static( path.resolve( __dirname, 'web-app' ) ) );
 app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/socket.io-client/dist' ) ) );
 
 // server listens on `9000` port
+Spinner.stop(true)
 const server = app.listen( 9000, () => console.log( 'Express server started on port 9000' ) );
+Spinner.start()
 
-// create a WebSocket server
 const io = socketIO( server );
 
-// listen for connection
 io.on( 'connection', ( client ) => {
+  Spinner.stop(true)
   console.log( 'SOCKET: ', 'A client connected', client.id );
+  Spinner.start()
 
-  // listen to `led-toggle` event
-  client.on( 'led-toggle', ( data ) => {
-    console.log( 'Received led-toggle event.' );
-    // toggle( data.r, data.g, data.b ); // toggle LEDs
+  client.on( 'open', ( data ) => {
+    Spinner.stop(true)
+    console.log( 'Received open event.' );
+    Coup.open()
+    Spinner.start()
+  } );
+
+  client.on( 'close', ( data ) => {
+    Spinner.stop(true)
+    console.log( 'Received close event.' );
+    Coup.close()
+    Spinner.start()
   } );
 
 } );
