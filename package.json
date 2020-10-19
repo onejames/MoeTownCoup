@@ -22,6 +22,7 @@
     "cli-table": "^0.3.1",
     "express": "^4.17.1",
     "i2c-bus": "^5.2.0",
+    "minimist": "^1.2.5",
     "onoff": "^6.0.0",
     "si7021-sensor": "0.0.7",
     "socket.io": "^2.3.0"

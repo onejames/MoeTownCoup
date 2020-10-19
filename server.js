@@ -1,10 +1,15 @@
 const path = require( 'path' );
 const express = require( 'express' );
 const socketIO = require( 'socket.io' );
-
-const { Coup, Spinner } = require( './coup' );
-
 const app = express();
+
+const minimist = require('minimist');
+
+let args = minimist(process.argv.slice(2), {
+    alias: {
+        w: 'web-only',
+    }
+});
 
 app.get( '/', ( request, response ) => {
   response.sendFile( path.resolve( __dirname, 'web-app/index.html' ), {
@@ -19,9 +24,16 @@ app.use( '/assets/', express.static( path.resolve( __dirname, 'web-app' ) ) );
 app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/socket.io-client/dist' ) ) );
 
 // server listens on `9000` port
-Spinner.stop(true)
 const server = app.listen( 9000, () => console.log( 'Express server started on port 9000' ) );
-Spinner.start()
+
+if(args.w === true) {
+  console.log('Web server only, Booting Coup skiped.')
+  const Coup = {}
+} else {
+  console.log('Express web server booted ...')
+  console.log('Loading the coup')
+  const { Coup, Spinner } = require( './coup' );
+}
 
 const io = socketIO( server );
 
@@ -40,6 +52,13 @@ io.on( 'connection', ( client ) => {
   client.on( 'close', ( data ) => {
     Spinner.stop(true)
     console.log( 'Received close event.' );
+    Coup.close()
+    Spinner.start()
+  } );
+
+  client.on( 'status', ( data ) => {
+    Spinner.stop(true)
+    console.log( 'Received request for status event.' );
     Coup.close()
     Spinner.start()
   } );

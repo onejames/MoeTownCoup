@@ -11,7 +11,7 @@ var Switch = require('./lib/Switch')
 var Relay = require('./lib/Relay')
 var Door = require('./lib/Door')
 
-out.logo('0.0.3')
+out.logo('0.0.6')
 out.configTable(config)
 
 spinner = out.spinner()
