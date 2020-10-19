@@ -1,3 +1,5 @@
+const EventEmitter = require('events');
+
 var config = require('./config')
 
 var outputs = require('./lib/outputs')
@@ -6,6 +8,8 @@ out = new outputs()
 const Coup = {
     status: null
 }
+
+const events = new EventEmitter()
 
 console.log('Booting Moe Town Coup...')
 
@@ -50,12 +54,14 @@ var statusOpen = () => {
   processing = false
   redLed.off()
   greenLed.on()
+  events.emit('opened')
   Coup.status = 'open'
 }
 var statusClosed = () => {
   processing = false
   redLed.on()
   greenLed.off()
+  events.emit('closed')
   Coup.status = 'closed'
 }
 
@@ -260,3 +266,4 @@ spinner.start()
 
 module.exports.Coup = Coup;
 module.exports.Spinner = spinner;
+module.exports.Events = events;

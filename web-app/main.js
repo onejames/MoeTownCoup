@@ -38,10 +38,17 @@ connection.on( 'disconnect', () => {
   updateStatus()
 } )
 
-connection.on( 'status', (data) => {
-    console.log(data)
-    state = data
+connection.on( 'message', (data) => {
+  console.log(data)
+  state = data.state
+
+  if(data.event =='status'){
     $('#statusContent').html(state)
+  } else if (data.event =='opened') {
+    $('#statusContent').html('opened')
+  } else if (data.event =='closed') {
+    $('#statusContent').html('closed')
+  }
 } )
 
 // WebSocket event emitter function
@@ -50,7 +57,8 @@ var emitEvent = function( event ) {
     return alert( 'Server connection is closed!' )
   }
 
-  // change button state
+  // disableButtons();
+
   if( event.target.id === 'button-close') {
       connection.emit( 'close', {} )
   }
