@@ -52,6 +52,8 @@ console.log(data)
     $('#status').html('opened')
   } else if (data.event =='closed') {
     $('#status').html('closed')
+  } else if (data.event =='imageRefresh') {
+    $('#coupImage').attr("src", "/images/coup.jpg?"+d.getTime());
   }
 
 } )

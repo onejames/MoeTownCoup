@@ -19,6 +19,14 @@ app.get( '/', ( request, response ) => {
   } )
 } )
 
+app.get( '/images/:image', ( request, response ) => {
+  response.sendFile( path.resolve( __dirname, 'web-app/images/'+request.params.image ), {
+    headers: {
+      'Content-Type': 'image/jpeg',
+    }
+  } )
+} )
+
 // send asset files
 app.use( '/assets/', express.static( path.resolve( __dirname, 'web-app' ) ) )
 app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/socket.io-client/dist' ) ) )
@@ -26,9 +34,16 @@ app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/sock
 // server listens on `9000` port
 const server = app.listen( 9000, () => console.log( 'Express server started on port 9000' ) )
 
-   console.log('Express web server booted ...')
-   console.log('Loading the coup')
-   const { Coup, Spinner, Events } = require( './coup' )
+// if(args.w === true) {
+  console.log('Web server only, Booting Coup skiped.')
+  var Coup = { close: () => {}, open: () => {}, state: {status: 'closed'} }
+  const EventEmitter = require('events')
+  const Events = new EventEmitter()
+// } else {
+//   console.log('Express web server booted ...')
+//   console.log('Loading the coup')
+//   const { Coup, Spinner, Events } = require( './coup' )
+// }
 
 const io = socketIO( server )
 
@@ -57,4 +72,23 @@ io.on( 'connection', ( client ) => {
   Events.on( 'opened', (data) => {
       client.send(JSON.stringify({state: Coup.state, event: "opened"}))
   } )
+
+  console.log('Loading the Camera...')
+
+  const PiCamera = require('pi-camera');
+  const myCamera = new PiCamera({
+    mode: 'photo',
+    output: `${ __dirname }/web-app/images/coup.jpg`,
+    width: 640,
+    height: 480,
+    nopreview: true,
+  });
+
+  myCamera.snap()
+    .then((result) => {
+      client.send(JSON.stringify({event: "imageRefresh"}))
+    })
+    .catch((error) => {
+       console.log(error)
+    });
 } )

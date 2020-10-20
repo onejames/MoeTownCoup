@@ -33,3 +33,8 @@ h2, h3 {
     height: 150px;
     border-radius: 20px;
 }
+
+.coupImage {
+    max-width: 100%;
+    overflow: hidden;
+}
