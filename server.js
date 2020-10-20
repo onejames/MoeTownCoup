@@ -26,16 +26,16 @@ app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/sock
 // server listens on `9000` port
 const server = app.listen( 9000, () => console.log( 'Express server started on port 9000' ) )
 
-if(args.w === true) {
+// if(args.w === true) {
   console.log('Web server only, Booting Coup skiped.')
-  var Coup = { close: () => {}, open: () => {} }
+  var Coup = { close: () => {}, open: () => {}, state: {status: 'closed'} }
   const EventEmitter = require('events')
   const Events = new EventEmitter()
-} else {
-  console.log('Express web server booted ...')
-  console.log('Loading the coup')
-  const { Coup, Spinner, Events } = require( './coup' )
-}
+// } else {
+//   console.log('Express web server booted ...')
+//   console.log('Loading the coup')
+//   const { Coup, Spinner, Events } = require( './coup' )
+// }
 
 const io = socketIO( server )
 
@@ -54,15 +54,14 @@ io.on( 'connection', ( client ) => {
 
   client.on( 'status', ( data ) => {
     console.log( 'Received request for status event.' )
-    client.send(JSON.stringify({state: Coup.status, event: "status"})
+    client.send(JSON.stringify({state: Coup.state, event: "status"}))
   } )
 
-} )
+  Events.on( 'closed', (data) => {
+      client.send(JSON.stringify({state: Coup.status, event: "closed"}))
+  } )
 
-Events.on( 'closed', (data) => {
-  client.send(JSON.stringify({state: Coup.status, event: "closed"})
-} )
-
-Events.on( 'opened', (data) => {
-  client.send(JSON.stringify({state: Coup.status, event: "opened"})
+  Events.on( 'opened', (data) => {
+      client.send(JSON.stringify({state: Coup.status, event: "opened"}))
+  } )
 } )

@@ -23,7 +23,7 @@ updateStatus = function() {
   if(isConnectionActive) {
     connection.emit( 'status', {} )
   } else {
-    $('#statusContent').html('<img class="mx-auto d-block" src="https://miro.medium.com/max/882/1*9EBHIOzhE1XfMYoKz1JcsQ.gif" />')
+    $('#processing').show()
   }
 }
 
@@ -39,16 +39,20 @@ connection.on( 'disconnect', () => {
 } )
 
 connection.on( 'message', (data) => {
+  data = JSON.parse(data)
   console.log(data)
   state = data.state
 
+  $('#processing').hide()
+
   if(data.event =='status'){
-    $('#statusContent').html(state)
+    $('#status').html(state.status)
   } else if (data.event =='opened') {
-    $('#statusContent').html('opened')
+    $('#status').html('opened')
   } else if (data.event =='closed') {
-    $('#statusContent').html('closed')
+    $('#status').html('closed')
   }
+
 } )
 
 // WebSocket event emitter function
@@ -57,13 +61,16 @@ var emitEvent = function( event ) {
     return alert( 'Server connection is closed!' )
   }
 
-  // disableButtons();
+  $('#processing').show()
+  $('#status').html('processing')
 
   if( event.target.id === 'button-close') {
-      connection.emit( 'close', {} )
+    // disableButtons();
+    connection.emit( 'close', {} )
   }
   if( event.target.id === 'button-open') {
-      connection.emit( 'open', {} )
+    // disableButtons();
+    connection.emit( 'open', {} )
   }
 
 }
