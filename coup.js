@@ -6,7 +6,9 @@ var outputs = require('./lib/outputs')
 out = new outputs()
 
 const Coup = {
+  state: {
     status: null
+  }
 }
 
 const events = new EventEmitter()
@@ -55,14 +57,14 @@ var statusOpen = () => {
   redLed.off()
   greenLed.on()
   events.emit('opened')
-  Coup.status = 'open'
+  Coup.state.status = 'open'
 }
 var statusClosed = () => {
   processing = false
   redLed.on()
   greenLed.off()
   events.emit('closed')
-  Coup.status = 'closed'
+  Coup.state.status = 'closed'
 }
 
 var blink = () => {
@@ -78,7 +80,7 @@ var inProcess = () => {
   redLed.on()
   greenLed.off()
   blink()
-  Coup.status = 'processing'
+  Coup.state.status = 'processing'
 }
 var openError = () => {
   setTimeout(() => { greenLed.off() }, 250)
@@ -267,3 +269,4 @@ spinner.start()
 module.exports.Coup = Coup;
 module.exports.Spinner = spinner;
 module.exports.Events = events;
+

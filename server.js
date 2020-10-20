@@ -26,16 +26,9 @@ app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/sock
 // server listens on `9000` port
 const server = app.listen( 9000, () => console.log( 'Express server started on port 9000' ) )
 
-// if(args.w === true) {
-  console.log('Web server only, Booting Coup skiped.')
-  var Coup = { close: () => {}, open: () => {}, state: {status: 'closed'} }
-  const EventEmitter = require('events')
-  const Events = new EventEmitter()
-// } else {
-//   console.log('Express web server booted ...')
-//   console.log('Loading the coup')
-//   const { Coup, Spinner, Events } = require( './coup' )
-// }
+   console.log('Express web server booted ...')
+   console.log('Loading the coup')
+   const { Coup, Spinner, Events } = require( './coup' )
 
 const io = socketIO( server )
 
@@ -58,10 +51,10 @@ io.on( 'connection', ( client ) => {
   } )
 
   Events.on( 'closed', (data) => {
-      client.send(JSON.stringify({state: Coup.status, event: "closed"}))
+      client.send(JSON.stringify({state: Coup.state, event: "closed"}))
   } )
 
   Events.on( 'opened', (data) => {
-      client.send(JSON.stringify({state: Coup.status, event: "opened"}))
+      client.send(JSON.stringify({state: Coup.state, event: "opened"}))
   } )
 } )

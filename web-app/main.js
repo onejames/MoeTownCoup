@@ -39,7 +39,8 @@ connection.on( 'disconnect', () => {
 } )
 
 connection.on( 'message', (data) => {
-  data = JSON.parse(data)
+console.log(data)
+	data = JSON.parse(data)
   console.log(data)
   state = data.state
 
