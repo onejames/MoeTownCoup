@@ -1,3 +1,5 @@
+// this needs re written as a real module
+
 const EventEmitter = require('events');
 
 var config = require('./config')
@@ -269,4 +271,3 @@ spinner.start()
 module.exports.Coup = Coup;
 module.exports.Spinner = spinner;
 module.exports.Events = events;
-

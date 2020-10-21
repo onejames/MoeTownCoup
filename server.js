@@ -34,11 +34,39 @@ app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/sock
 // server listens on `9000` port
 const server = app.listen( 9000, () => console.log( 'Express server started on port 9000' ) )
 
-  console.log('Express web server booted ...')
-  console.log('Loading the coup')
-  const { Coup, Spinner, Events } = require( './coup' )
+console.log('Express web server booted ...')
+console.log('Loading the coup')
+const { Coup, Spinner, Events } = require( './coup' )
+
+console.log('Loading the Camera...')
+
+const PiCamera = require('pi-camera');
+const myCamera = new PiCamera({
+  mode: 'photo',
+  output: `./web-app/images/snap.jpg`,
+  width: 640,
+  height: 480,
+  nopreview: true,
+});
+
+function snap() {
+  myCamera.snap()
+    .then((result) => {
+        console.log('snapped the camera!')
+        Events.emit('snap')
+    })
+    .catch((error) => {
+        console.log(error)
+    });
+}
+
+snap()
+
+setTimeout(snap, 10000)
 
 const io = socketIO( server )
+
+var client = null
 
 io.on( 'connection', ( client ) => {
   console.log( 'SOCKET: ', 'A client connected', client.id )
@@ -66,23 +94,8 @@ io.on( 'connection', ( client ) => {
       client.send(JSON.stringify({state: Coup.state, event: "opened"}))
   } )
 
-  console.log('Loading the Camera...')
+  Events.on( 'snap', (data) => {
+      client.send(JSON.stringify({event: "imageRefresh"}))
+  } )
 
-  const PiCamera = require('pi-camera');
-  const myCamera = new PiCamera({
-    mode: 'photo',
-    output: `./web-app/images/coup.jpg`,
-    width: 640,
-    height: 480,
-    nopreview: true,
-  });
-
-  myCamera.snap()
-    .then((result) => {
-      console.log('snapped the camera!')
-	    client.send(JSON.stringify({event: "imageRefresh"}))
-    })
-    .catch((error) => {
-       console.log(error)
-    });
 } )
