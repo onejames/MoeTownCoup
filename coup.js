@@ -1,6 +1,6 @@
 // this needs re written as a real module
 
-const EventEmitter = require('events');
+const EventEmitter = require('events')
 
 var config = require('./config')
 
@@ -9,7 +9,9 @@ out = new outputs()
 
 const Coup = {
   state: {
-    status: null
+    status: null,
+    humidity: null,
+    temperature: null
   }
 }
 
@@ -140,7 +142,7 @@ Coup.open = () => {
     console.log('remote open requested')
     door.open()
     spinner.start()
-};
+}
 
 redSw.SWITCH.watch((err, value) => {
   if (err) {
@@ -167,7 +169,7 @@ Coup.close = () => {
     console.log('remote close requested')
     door.close()
     spinner.start()
-};
+}
 
 // - - - -
 
@@ -186,68 +188,52 @@ console.log('Status set')
 
 // - - - - - - - - - - - - - - - ENVIROMENTAL - - - - - - - - - - - - - - - - -
 
-console.log('Initalising Ic2 bus and weather shield...')
+console.log('Enviromental DHT22 and Relay...')
 
 var bigRelay = new Relay(config.bigRelay)
-var envData = {humidity: null, temperature: null, pressure: null, luminosity: null}
-Coup.envData = envData
 
-const Si7021 = require('./lib/si7021-sensor')
-const si7021 = new Si7021({ i2cBusNo : 1 })
+var sensor = require("node-dht-sensor")
 
-const readSensorData = () => {
-  si7021.readSensorData()
-    .then((data) => {
-      let oldTemp = envData.temperature
-      envData.humidity = data.humidity
-      envData.temperature = data.temperature_C
+function readEnviroment() {
+  sensor.read(22, config.DHT22, function(err, temperature, humidity) {
+    if (!err) {
+      Coup.state.humidity = humidity
+      Coup.state.temperature =  temperature
+    } else {
+      console.log(err)
+    }
 
-      // Move this back in that if there...
-      spinner.stop(true)
-      console.log(`${JSON.stringify(data, null, 2)}`)
-      spinner.start()
-      if(Math.abs(oldTemp - data.temperature_C) > 1) {
-        processNewEnvData()
-      }
-
-      setTimeout(readSensorData, 10000)
-    })
-    .catch((err) => {
-      console.log(`Si7021 read error: ${err}`)
-      setTimeout(readSensorData, 10000)
-    })
+    events.emit('envUpdate', Coup.state)
+  })
 }
 
-si7021.reset()
-  .then((result) => readSensorData())
-  .catch((err) => console.error(`Si7021 reset failed: ${err} `))
+readEnviroment()
+setTimeout(readEnviroment, 10000)
 
-// send new env data to aws every X min
-
-if(envData.temperature > 20) {
+if(Coup.state.temperature == null) {
+  console.log("No Enviromental data yet")
+} else if(Coup.state.temperature > 20) {
   console.log("We are in cooling mode")
 } else {
   console.log("We are in heating mode")
 }
 
 var processNewEnvData = () => {
-  if(envData.temperature == null){
+  if(Coup.state.temperature == null){
     return
   }
 
-  if(envData.temperature > 25) {
+  if(Coup.state.temperature > 25) {
     bigRelay.on()
     console.log('enabling fan')
   }
-  if(envData.temperature < 5) {
+  if(Coup.state.temperature < 5) {
     bigRelay.on()
     console.log('enabling heater')
   }
-  if( envData.temperature < 24 &&  envData.temperature > 5 ) {
+  if( Coup.state.temperature < 24 &&  Coup.state.temperature > 5 ) {
     bigRelay.off()
   }
-
-  // Check luminosity and close door if dark?
 }
 
 console.log('Enviromental online')
@@ -268,6 +254,6 @@ process.on('SIGINT', _ => {
 
 spinner.start()
 
-module.exports.Coup = Coup;
-module.exports.Spinner = spinner;
-module.exports.Events = events;
+module.exports.Coup = Coup
+module.exports.Spinner = spinner
+module.exports.Events = events

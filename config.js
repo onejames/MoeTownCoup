@@ -13,11 +13,12 @@ module.exports = {
     greenSw: 24,
     openSw: 4,
 
-    bigRelay: 6
+    bigRelay: 6,
+
+    DHT22: 16
 
     // : 12,
     // : 13,
-    // : 16,
     // : 17,
     // : 18,
     // : 27
