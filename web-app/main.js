@@ -48,6 +48,8 @@ console.log(data)
 
   if(data.event =='status'){
     $('#status').html(state.status)
+    $('#temprature').html(state.temprature+"&#176;C, "+((state.temprature × 9/5) + 32)+"&#176;F")
+    $('#humidity').html(state.humidity+"% RH")
   } else if (data.event =='opened') {
     $('#status').html('opened')
   } else if (data.event =='closed') {
