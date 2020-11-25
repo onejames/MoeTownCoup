@@ -9,7 +9,7 @@ var button_open = document.getElementById( 'button-open' )
 var state = {
   door: "closed",
   heater: "off",
-  temprature: "70",
+  temperature: "70",
   humidity: "60"
 }
 
@@ -43,9 +43,9 @@ connection.on( 'message', (data) => {
   state = data.state
 
   if(data.event =='status'){
-    var degc = Math.round(state.temprature * 10) / 10
+    var degc = Math.round(state.temperature * 10) / 10
     $('#status').html(state.status)
-    $('#temprature').html(degc+"&#176;C, "+(((degc * 9) / 5) + 32)+"&#176;F")
+    $('#temperature').html(degc+"&#176;C, "+(((degc * 9) / 5) + 32)+"&#176;F")
     $('#humidity').html(Math.round(state.humidity * 10) / 10+"% RH")
   } else if (data.event =='opened') {
     $('#status').html('opened')
