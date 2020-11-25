@@ -22,6 +22,14 @@ app.get( '/', ( request, response ) => {
 // Static files
 app.use(express.static(__dirname + '/web-app'));
 
+app.get( '/images/:image', ( request, response ) => {
+  response.sendFile( path.resolve( __dirname, 'web-app/images/'+request.params.image ), {
+    headers: {
+      'Content-Type': 'image/jpeg',
+    }
+  } )
+} )
+
 // send asset files
 app.use( '/assets/', express.static( path.resolve( __dirname, 'web-app' ) ) )
 app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/socket.io-client/dist' ) ) )

@@ -3,8 +3,8 @@ Its a coup
 
 npm install
 
-# Primary loop
-npm main.js
+# To start web server
+npm server.js
 
-Simple test files in:
+# Simple test files in:
 tests/
