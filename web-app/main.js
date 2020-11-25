@@ -39,17 +39,14 @@ connection.on( 'disconnect', () => {
 } )
 
 connection.on( 'message', (data) => {
-console.log(data)
 	data = JSON.parse(data)
-  console.log(data)
   state = data.state
 
-  $('#processing').hide()
-
   if(data.event =='status'){
+    var degc = Math.round(state.temprature * 10) / 10
     $('#status').html(state.status)
-    $('#temprature').html(state.temprature+"&#176;C, "+(((state.temprature * 9) / 5) + 32)+"&#176;F")
-    $('#humidity').html(state.humidity+"% RH")
+    $('#temprature').html(degc+"&#176;C, "+(((degc * 9) / 5) + 32)+"&#176;F")
+    $('#humidity').html(Math.round(state.humidity * 10) / 10+"% RH")
   } else if (data.event =='opened') {
     $('#status').html('opened')
   } else if (data.event =='closed') {
