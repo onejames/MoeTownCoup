@@ -44,8 +44,9 @@ connection.on( 'message', (data) => {
 
   if(data.event =='status'){
     var degc = Math.round(state.temperature * 10) / 10
+    var degf = Math.round( (((degc * 9) / 5) + 32) * 10) / 10
     $('#status').html(state.status)
-    $('#temperature').html(degc+"&#176;C, "+(((degc * 9) / 5) + 32)+"&#176;F")
+    $('#temperature').html(degc+"&#176;C, "+degf+"&#176;F")
     $('#humidity').html(Math.round(state.humidity * 10) / 10+"% RH")
   } else if (data.event =='opened') {
     $('#status').html('opened')
