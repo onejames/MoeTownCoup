@@ -53,12 +53,15 @@ connection.on( 'message', (data) => {
     if(state.envStatus == 'heating'){
       $('#heating').show()
       $('#cooling').hide()
+      $('#envOff').hide()
     } else if(state.envStatus == 'cooling'){
       $('#cooling').show()
       $('#heating').hide()
+      $('#envOff').hide()
     } else if(state.envStatus == 'off' || state.envStatus == null ){
       $('#cooling').hide()
       $('#heating').hide()
+      $('#envOff').show()
     }
   } else if (data.event =='opened') {
     $('#status').html('opened')
