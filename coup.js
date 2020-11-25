@@ -10,8 +10,9 @@ out = new outputs()
 const Coup = {
   state: {
     status: null,
+    temperature: null,
     humidity: null,
-    temperature: null
+    envStatus: null
   }
 }
 
@@ -226,13 +227,16 @@ var processNewEnvData = () => {
   if(Coup.state.temperature > 25) {
     bigRelay.on()
     console.log('enabling fan')
+    Coup.status.envStatus == 'heating'
   }
   if(Coup.state.temperature < 5) {
     bigRelay.on()
     console.log('enabling heater')
+    Coup.status.envStatus == 'cooling'
   }
   if( Coup.state.temperature < 24 &&  Coup.state.temperature > 5 ) {
     bigRelay.off()
+    Coup.status.envStatus == 'off'
   }
 }
 
