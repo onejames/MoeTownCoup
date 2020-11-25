@@ -35,7 +35,7 @@ app.use( '/assets/', express.static( path.resolve( __dirname, 'web-app' ) ) )
 app.use( '/assets/', express.static( path.resolve( __dirname, 'node_modules/socket.io-client/dist' ) ) )
 
 // server listens on `9000` port
-const server = app.listen( 9000, () => console.log( 'Express server started on port 9000' ) )
+const server = app.listen( 80, () => console.log( 'Express server started on port 9000' ) )
 
 console.log('Express web server booted ...')
 console.log('Loading the coup')
