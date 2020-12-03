@@ -66,7 +66,7 @@ function snap() {
 
 snap()
 
-setTimeout(snap, 10000)
+setInterval(snap, 10000)
 
 const io = socketIO( server )
 

@@ -209,7 +209,7 @@ function readEnviroment() {
 }
 
 readEnviroment()
-setTimeout(readEnviroment, 10000)
+setInterval(readEnviroment, 10000)
 
 if(Coup.state.temperature == null) {
   console.log("No Enviromental data yet")
