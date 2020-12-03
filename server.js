@@ -103,7 +103,7 @@ io.on( 'connection', ( client ) => {
   }
   Events.on( 'snap', snap )
 
-  socket.on("disconnect", (reason) => {
+  client.on("disconnect", (reason) => {
     Events.removeListener('closed', closed)
     Events.removeListener('opened', opened)
     Events.removeListener('snap', snap)
