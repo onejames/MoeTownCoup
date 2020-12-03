@@ -1,6 +1,10 @@
 const path = require( 'path' )
 const express = require( 'express' )
 const socketIO = require( 'socket.io' )
+
+const log = require('simple-node-logger').createSimpleLogger('logs/server.log')
+log.info('Starting server now.')
+
 const app = express()
 
 const minimist = require('minimist')
@@ -20,7 +24,7 @@ app.get( '/', ( request, response ) => {
 } )
 
 // Static files
-app.use(express.static(__dirname + '/web-app'));
+app.use(express.static(__dirname + '/web-app'))
 
 app.get( '/images/:image', ( request, response ) => {
   response.sendFile( path.resolve( __dirname, 'web-app/images/'+request.params.image ), {
@@ -43,14 +47,14 @@ const { Coup, Spinner, Events } = require( './coup' )
 
 console.log('Loading the Camera...')
 
-const PiCamera = require('pi-camera');
+const PiCamera = require('pi-camera')
 const myCamera = new PiCamera({
   mode: 'photo',
   output: `./web-app/images/snap.jpg`,
   width: 640,
   height: 480,
   nopreview: true,
-});
+})
 
 function snap() {
   myCamera.snap()
@@ -60,7 +64,7 @@ function snap() {
     })
     .catch((error) => {
         console.log(error)
-    });
+    })
 }
 
 snap()
@@ -69,36 +73,48 @@ setTimeout(snap, 10000)
 
 const io = socketIO( server )
 
-var client = null
-
 io.on( 'connection', ( client ) => {
   console.log( 'SOCKET: ', 'A client connected', client.id )
 
   client.on( 'open', ( data ) => {
     console.log( 'Received open event.' )
+    log.info( 'Received open event.' )
     Coup.open()
   } )
 
   client.on( 'close', ( data ) => {
     console.log( 'Received close event.' )
+    log.info('Received close event.')
     Coup.close()
   } )
 
   client.on( 'status', ( data ) => {
     console.log( 'Received request for status event.' )
+    log.info('Received request for status event.')
     client.send(JSON.stringify({state: Coup.state, event: "status"}))
   } )
 
-  Events.on( 'closed', (data) => {
-      client.send(JSON.stringify({state: Coup.state, event: "closed"}))
-  } )
+  var closed = (data) => {
+    client.send(JSON.stringify({state: Coup.state, event: "closed"}))
+  }
+  Events.on( 'closed', closed )
 
-  Events.on( 'opened', (data) => {
-      client.send(JSON.stringify({state: Coup.state, event: "opened"}))
-  } )
+  var opened = (data) => {
+    client.send(JSON.stringify({state: Coup.state, event: "opened"}))
+  }
+  Events.on( 'opened', opened )
 
-  Events.on( 'snap', (data) => {
-      client.send(JSON.stringify({event: "imageRefresh"}))
-  } )
+  var snap = (data) => {
+    log.info('snapped')
+    client.send(JSON.stringify({event: "imageRefresh"}))
+  }
+  Events.on( 'snap', snap )
+
+  socket.on("disconnect", (reason) => {
+    Events.removeListener('closed', closed)
+    Events.removeListener('opened', opened)
+    Events.removeListener('snap', snap)
+    console.log(client.id+' disconnected: '+reason)
+  })
 
 } )

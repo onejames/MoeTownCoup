@@ -1,4 +1,5 @@
 // this needs re written as a real module
+const log = require('simple-node-logger').createSimpleLogger('logs/coup.log');
 
 const EventEmitter = require('events')
 
@@ -252,7 +253,6 @@ process.on('SIGINT', _ => {
   redSw.destroy()
   greenLed.destroy()
   redLed.destroy()
-  si7021.reset()
   process.exit(0)
 })
 
