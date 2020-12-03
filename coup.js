@@ -1,5 +1,4 @@
 // this needs re written as a real module
-const log = require('simple-node-logger').createSimpleLogger('logs/coup.log');
 
 const EventEmitter = require('events')
 

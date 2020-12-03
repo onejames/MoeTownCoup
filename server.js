@@ -2,9 +2,6 @@ const path = require( 'path' )
 const express = require( 'express' )
 const socketIO = require( 'socket.io' )
 
-const log = require('simple-node-logger').createSimpleLogger('logs/server.log')
-log.info('Starting server now.')
-
 const app = express()
 
 const minimist = require('minimist')
@@ -78,19 +75,16 @@ io.on( 'connection', ( client ) => {
 
   client.on( 'open', ( data ) => {
     console.log( 'Received open event.' )
-    log.info( 'Received open event.' )
     Coup.open()
   } )
 
   client.on( 'close', ( data ) => {
     console.log( 'Received close event.' )
-    log.info('Received close event.')
     Coup.close()
   } )
 
   client.on( 'status', ( data ) => {
     console.log( 'Received request for status event.' )
-    log.info('Received request for status event.')
     client.send(JSON.stringify({state: Coup.state, event: "status"}))
   } )
 
@@ -105,7 +99,6 @@ io.on( 'connection', ( client ) => {
   Events.on( 'opened', opened )
 
   var snap = (data) => {
-    log.info('snapped')
     client.send(JSON.stringify({event: "imageRefresh"}))
   }
   Events.on( 'snap', snap )
