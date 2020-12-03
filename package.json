@@ -25,7 +25,7 @@
     "minimist": "^1.2.5",
     "onoff": "^6.0.0",
     "pi-camera": "^1.5.0",
-    "si7021-sensor": "0.0.7",
+    "simple-node-logger": "^18.12.24",
     "socket.io": "^2.3.0"
   }
 }
