@@ -204,16 +204,16 @@ var processNewEnvData = () => {
   if(Coup.state.temperature > 25) {
     bigRelay.on()
     console.log('enabling fan')
-    Coup.state.envStatus == 'heating'
+    Coup.state.envStatus = 'cooling'
   }
   if(Coup.state.temperature < 5) {
     bigRelay.on()
     console.log('enabling heater')
-    Coup.state.envStatus == 'cooling'
+    Coup.state.envStatus = 'heating'
   }
   if( Coup.state.temperature < 24 &&  Coup.state.temperature > 5 ) {
     bigRelay.off()
-    Coup.state.envStatus == 'off'
+    Coup.state.envStatus = 'off'
   }
 }
 
@@ -228,7 +228,7 @@ function readEnviroment() {
       console.log(err)
     }
 
-    events.emit('envUpdate', Coup.state)
+    events.emit('envUpdate', Coup)
   })
 }
 
