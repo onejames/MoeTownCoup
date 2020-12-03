@@ -23,6 +23,7 @@
     "express": "^4.17.1",
     "i2c-bus": "^5.2.1",
     "minimist": "^1.2.5",
+    "node-dht-sensor": "^0.4.3",
     "onoff": "^6.0.0",
     "pi-camera": "^1.5.0",
     "simple-node-logger": "^18.12.24",
