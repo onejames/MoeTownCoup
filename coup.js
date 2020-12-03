@@ -195,29 +195,6 @@ var bigRelay = new Relay(config.bigRelay)
 
 var sensor = require("node-dht-sensor")
 
-function readEnviroment() {
-  sensor.read(22, config.DHT22, function(err, temperature, humidity) {
-    if (!err) {
-      Coup.state.humidity = humidity
-      Coup.state.temperature =  temperature
-    } else {
-      console.log(err)
-    }
-
-    events.emit('envUpdate', Coup.state)
-  })
-}
-
-readEnviroment()
-setInterval(readEnviroment, 10000)
-
-if(Coup.state.temperature == null) {
-  console.log("No Enviromental data yet")
-} else if(Coup.state.temperature > 20) {
-  console.log("We are in cooling mode")
-} else {
-  console.log("We are in heating mode")
-}
 
 var processNewEnvData = () => {
   if(Coup.state.temperature == null){
@@ -238,6 +215,32 @@ var processNewEnvData = () => {
     bigRelay.off()
     Coup.status.envStatus == 'off'
   }
+}
+
+function readEnviroment() {
+  sensor.read(22, config.DHT22, function(err, temperature, humidity) {
+    if (!err) {
+      Coup.state.humidity = humidity
+      Coup.state.temperature =  temperature
+      console.log('Reading the enviroment: H: '+humidity+', T: '+temperature)
+      processNewEnvData()
+    } else {
+      console.log(err)
+    }
+
+    events.emit('envUpdate', Coup.state)
+  })
+}
+
+readEnviroment()
+setInterval(readEnviroment, 10000)
+
+if(Coup.state.temperature == null) {
+  console.log("No Enviromental data yet")
+} else if(Coup.state.temperature > 20) {
+  console.log("We are in cooling mode")
+} else {
+  console.log("We are in heating mode")
 }
 
 console.log('Enviromental online')

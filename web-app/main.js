@@ -68,8 +68,8 @@ connection.on( 'message', (data) => {
   } else if (data.event =='closed') {
     $('#status').html('closed')
   } else if (data.event =='imageRefresh') {
-    var d = new Date();
-    $('#coupImage').attr("src", "/images/snap.jpg?"+d.getTime());
+    var d = new Date()
+    $('#coupImage').attr("src", "/images/snap.jpg?"+d.getTime())
   }
 
 } )
@@ -84,11 +84,11 @@ var emitEvent = function( event ) {
   $('#status').html('processing')
 
   if( event.target.id === 'button-close') {
-    // disableButtons();
+    // disableButtons()
     connection.emit( 'close', {} )
   }
   if( event.target.id === 'button-open') {
-    // disableButtons();
+    // disableButtons()
     connection.emit( 'open', {} )
   }
 
@@ -100,4 +100,4 @@ button_open.addEventListener( 'click', emitEvent )
 
 $( document ).ready(function() {
   updateStatus()
-});
+})
