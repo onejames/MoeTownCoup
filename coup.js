@@ -26,15 +26,15 @@ var Switch = require('./lib/Switch')
 var Relay = require('./lib/Relay')
 var Door = require('./lib/Door')
 
-out.logo('0.0.6')
+out.logo('0.0.9')
 out.configTable(config)
 
 spinner = out.spinner()
 
 const motor = new Stepper(
-    config.motor.stepPin,
-    config.motor.directionPin,
-    config.motor.enablePin
+  config.motor.stepPin,
+  config.motor.directionPin,
+  config.motor.enablePin
 ) // sleep=0, reset=0, ms1=0, ms2=0, ms3=0, stepsPerRev=200)
 motor.disable()
 
@@ -138,11 +138,11 @@ greenSw.SWITCH.watch((err, value) => {
   }
 })
 Coup.open = () => {
-    inProcess()
-    spinner.stop(true)
-    console.log('remote open requested')
-    door.open()
-    spinner.start()
+  inProcess()
+  spinner.stop(true)
+  console.log('remote open requested')
+  door.open()
+  spinner.start()
 }
 
 redSw.SWITCH.watch((err, value) => {
@@ -165,11 +165,11 @@ redSw.SWITCH.watch((err, value) => {
   }
 })
 Coup.close = () => {
-    inProcess()
-    spinner.stop(true)
-    console.log('remote close requested')
-    door.close()
-    spinner.start()
+  inProcess()
+  spinner.stop(true)
+  console.log('remote close requested')
+  door.close()
+  spinner.start()
 }
 
 // - - - -
@@ -196,24 +196,36 @@ var bigRelay = new Relay(config.bigRelay)
 var sensor = require("node-dht-sensor")
 
 
-var processNewEnvData = () => {
+function processNewEnvData() {
   if(Coup.state.temperature == null){
+    console.log("No Enviromental data")
     return
   }
 
   if(Coup.state.temperature > 25) {
     bigRelay.on()
-    console.log('enabling fan')
-    Coup.state.envStatus = 'cooling'
-  }
-  if(Coup.state.temperature < 5) {
+    if(Coup.state.envStatus == 'cooling') {
+      console.log('continuing to cool')
+    } else {
+      Coup.state.envStatus = 'cooling'
+      console.log('enabling fan')
+    }
+  } else if(Coup.state.temperature < 5) {
     bigRelay.on()
-    console.log('enabling heater')
-    Coup.state.envStatus = 'heating'
-  }
-  if( Coup.state.temperature < 24 &&  Coup.state.temperature > 5 ) {
+    if(  Coup.state.envStatus == 'heating'){
+      console.log('continuing to heat')
+    } else {
+      console.log('enabling heater')
+      Coup.state.envStatus = 'heating'
+    }
+  } else {
     bigRelay.off()
-    Coup.state.envStatus = 'off'
+    if(Coup.state.envStatus == 'off') {
+      console.log('temperature within parameters')
+    } else {
+      Coup.state.envStatus = 'off'
+      console.log('disabling heating/cooling')
+    }
   }
 }
 
@@ -236,7 +248,7 @@ readEnviroment()
 setInterval(readEnviroment, 10000)
 
 if(Coup.state.temperature == null) {
-  console.log("No Enviromental data yet")
+  console.log("Enviromental data still loading...")
 } else if(Coup.state.temperature > 20) {
   console.log("We are in cooling mode")
 } else {
